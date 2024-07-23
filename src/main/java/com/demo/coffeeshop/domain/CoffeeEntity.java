@@ -4,6 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class CoffeeEntity {
@@ -14,6 +19,10 @@ public class CoffeeEntity {
     private String origin;
     private String description;
     private double price;
+
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime addedDate;
 
     // Getters and Setters
     public Long getId() {
@@ -55,4 +64,13 @@ public class CoffeeEntity {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public LocalDateTime getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(LocalDateTime addedDate) {
+        this.addedDate = addedDate;
+    }
+
 }

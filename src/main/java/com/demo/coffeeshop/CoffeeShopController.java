@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/coffees")
-public class CoffeeController {
+public class CoffeeShopController {
 
     @Autowired
     private CoffeeRepository coffeeRepository;
