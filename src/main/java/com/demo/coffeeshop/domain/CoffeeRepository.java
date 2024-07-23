@@ -1,4 +1,4 @@
-package com.demo.coffeeshop;
+package com.demo.coffeeshop.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
