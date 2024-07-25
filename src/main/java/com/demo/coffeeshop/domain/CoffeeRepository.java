@@ -2,5 +2,9 @@ package com.demo.coffeeshop.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CoffeeRepository extends JpaRepository<CoffeeEntity, Long> {
+import java.util.List;
+
+public interface CoffeeRepository extends JpaRepository<Coffee, Long> {
+    List<Coffee> findByCategory(String category);
+
 }

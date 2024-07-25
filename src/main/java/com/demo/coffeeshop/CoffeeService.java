@@ -1,6 +1,6 @@
 package com.demo.coffeeshop;
 
-import com.demo.coffeeshop.domain.CoffeeEntity;
+import com.demo.coffeeshop.domain.Coffee;
 import com.demo.coffeeshop.domain.CoffeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,18 +9,19 @@ import java.util.List;
 
 @Service
 public class CoffeeService {
+
     @Autowired
     private CoffeeRepository coffeeRepository;
 
-    public List<CoffeeEntity> getAllCoffees() {
+    public List<Coffee> getAllCoffees() {
         return coffeeRepository.findAll();
     }
 
-    public CoffeeEntity getCoffeeById(Long id) {
+    public Coffee getCoffeeById(Long id) {
         return coffeeRepository.findById(id).orElse(null);
     }
 
-    public CoffeeEntity saveCoffee(CoffeeEntity coffee) {
+    public Coffee saveCoffee(Coffee coffee) {
         return coffeeRepository.save(coffee);
     }
 

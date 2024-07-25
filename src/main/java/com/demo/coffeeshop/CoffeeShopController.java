@@ -1,19 +1,12 @@
 package com.demo.coffeeshop;
 
-import com.demo.coffeeshop.domain.CoffeeEntity;
+import com.demo.coffeeshop.domain.Coffee;
 import com.demo.coffeeshop.domain.CoffeeRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,53 +17,60 @@ public class CoffeeShopController {
     @Autowired
     private CoffeeRepository coffeeRepository;
 
-    @GetMapping
-    public String listCoffees(Model model) {
-        List<CoffeeEntity> coffees = coffeeRepository.findAll();
-        model.addAttribute("coffees", coffees);
-        return "coffee_list";
-    }
 
-    @GetMapping("/new")
-    public String showCoffeeForm(Model model) {
-        model.addAttribute("coffee", new CoffeeEntity());
-        return "coffee_form";
+    @GetMapping
+    public List<Coffee> getAllCoffees() {
+        return coffeeRepository.findAll();
     }
 
     @PostMapping
-    public String saveCoffee(@Valid @ModelAttribute CoffeeEntity coffee, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "coffee_form";
-        }
-        coffee.setAddedDate(LocalDateTime.now());
-        coffeeRepository.save(coffee);
-        return "redirect:/coffees";
+    public Coffee createCoffee(@RequestBody Coffee coffee) {
+        return coffeeRepository.save(coffee);
     }
 
-    @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Optional<CoffeeEntity> coffee = coffeeRepository.findById(id);
-        if (coffee.isPresent()) {
-            model.addAttribute("coffee", coffee.get());
-            return "coffee_form";
+    @PutMapping("/{id}")
+    public ResponseEntity<Coffee> updateCoffee(@PathVariable Long id, @RequestBody Coffee coffeeDetails) {
+        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
+        if (optionalCoffee.isPresent()) {
+            Coffee coffee = optionalCoffee.get();
+            coffee.setName(coffeeDetails.getName());
+            coffee.setPrice(coffeeDetails.getPrice());
+            coffee.setDescription(coffeeDetails.getDescription());
+            coffee.setImageUrl(coffeeDetails.getImageUrl());
+            coffee.setCategory(coffeeDetails.getCategory());
+            final Coffee updatedCoffee = coffeeRepository.save(coffee);
+            return ResponseEntity.ok(updatedCoffee);
         } else {
-            return "redirect:/coffees";
+            return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping("/{id}")
-    public String updateCoffee(@PathVariable("id") Long id, @Valid @ModelAttribute CoffeeEntity coffee, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "coffee_form";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCoffee(@PathVariable Long id) {
+        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
+        if (optionalCoffee.isPresent()) {
+            coffeeRepository.delete(optionalCoffee.get());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        coffee.setId(id);
-        coffeeRepository.save(coffee);
-        return "redirect:/coffees";
     }
 
-    @GetMapping("/{id}/delete")
-    public String deleteCoffee(@PathVariable("id") Long id) {
-        coffeeRepository.deleteById(id);
-        return "redirect:/coffees";
+    @GetMapping("/category/{category}")
+    public List<Coffee> getCoffeesByCategory(@PathVariable String category) {
+        return coffeeRepository.findByCategory(category);
+    }
+
+    @PutMapping("/{id}/availability")
+    public ResponseEntity<Coffee> updateCoffeeAvailability(@PathVariable Long id, @RequestParam boolean available) {
+        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
+        if (optionalCoffee.isPresent()) {
+            Coffee coffee = optionalCoffee.get();
+            coffee.setAvailable(available);
+            final Coffee updatedCoffee = coffeeRepository.save(coffee);
+            return ResponseEntity.ok(updatedCoffee);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
