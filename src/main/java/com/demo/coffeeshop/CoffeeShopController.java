@@ -15,30 +15,29 @@ import java.util.Optional;
 public class CoffeeShopController {
 
     @Autowired
-    private CoffeeRepository coffeeRepository;
+    private CoffeeService coffeeService;
 
 
     @GetMapping
     public List<Coffee> getAllCoffees() {
-        return coffeeRepository.findAll();
+        return coffeeService.getAllCoffees();
     }
 
     @PostMapping
     public Coffee createCoffee(@RequestBody Coffee coffee) {
-        return coffeeRepository.save(coffee);
+        return coffeeService.saveCoffee(coffee);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Coffee> updateCoffee(@PathVariable Long id, @RequestBody Coffee coffeeDetails) {
-        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
-        if (optionalCoffee.isPresent()) {
-            Coffee coffee = optionalCoffee.get();
+        Coffee coffee = coffeeService.getCoffeeById(id);
+        if (coffee != null) {
             coffee.setName(coffeeDetails.getName());
             coffee.setPrice(coffeeDetails.getPrice());
             coffee.setDescription(coffeeDetails.getDescription());
             coffee.setImageUrl(coffeeDetails.getImageUrl());
             coffee.setCategory(coffeeDetails.getCategory());
-            final Coffee updatedCoffee = coffeeRepository.save(coffee);
+            final Coffee updatedCoffee = coffeeService.saveCoffee(coffee);
             return ResponseEntity.ok(updatedCoffee);
         } else {
             return ResponseEntity.notFound().build();
@@ -47,9 +46,9 @@ public class CoffeeShopController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCoffee(@PathVariable Long id) {
-        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
-        if (optionalCoffee.isPresent()) {
-            coffeeRepository.delete(optionalCoffee.get());
+        Coffee coffee = coffeeService.getCoffeeById(id);
+        if (coffee != null) {
+            coffeeService.deleteCoffee(coffee.getId());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
@@ -58,16 +57,15 @@ public class CoffeeShopController {
 
     @GetMapping("/category/{category}")
     public List<Coffee> getCoffeesByCategory(@PathVariable String category) {
-        return coffeeRepository.findByCategory(category);
+        return coffeeService.getCoffeeByCategory(category);
     }
 
     @PutMapping("/{id}/availability")
     public ResponseEntity<Coffee> updateCoffeeAvailability(@PathVariable Long id, @RequestParam boolean available) {
-        Optional<Coffee> optionalCoffee = coffeeRepository.findById(id);
-        if (optionalCoffee.isPresent()) {
-            Coffee coffee = optionalCoffee.get();
+        Coffee coffee = coffeeService.getCoffeeById(id);
+        if (coffee != null) {
             coffee.setAvailable(available);
-            final Coffee updatedCoffee = coffeeRepository.save(coffee);
+            final Coffee updatedCoffee = coffeeService.saveCoffee(coffee);
             return ResponseEntity.ok(updatedCoffee);
         } else {
             return ResponseEntity.notFound().build();

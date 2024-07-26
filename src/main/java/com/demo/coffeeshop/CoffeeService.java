@@ -21,6 +21,10 @@ public class CoffeeService {
         return coffeeRepository.findById(id).orElse(null);
     }
 
+    public List<Coffee> getCoffeeByCategory(String category) {
+        return coffeeRepository.findByCategory(category);
+    }
+
     public Coffee saveCoffee(Coffee coffee) {
         return coffeeRepository.save(coffee);
     }
