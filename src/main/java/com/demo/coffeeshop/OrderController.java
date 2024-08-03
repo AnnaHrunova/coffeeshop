@@ -49,12 +49,11 @@ public class OrderController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        Optional<Order> optionalOrder = orderRepository.findById(id);
-        if (optionalOrder.isPresent()) {
-            orderRepository.delete(optionalOrder.get());
-            return ResponseEntity.ok().build();
+    @PostMapping("/{orderId}/reject")
+    public ResponseEntity<String> rejectOrder(@PathVariable Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            return ResponseEntity.ok("Order rejected successfully.");
         } else {
             return ResponseEntity.notFound().build();
         }
